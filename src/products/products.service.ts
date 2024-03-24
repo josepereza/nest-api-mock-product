@@ -33,11 +33,13 @@ export class ProductsService implements OnApplicationBootstrap {
         description: faker.commerce.productDescription(),
         price: parseFloat(faker.commerce.price({ min: 10, max: 100 })),
       };
-      this.products.push(product)
+      this.products.push(product);
     }
   }
   create(createProductDto: CreateProductDto) {
-    return 'This action adds a new product';
+    const modifiedProduct = { ...this.newProduct, ...createProductDto };
+    this.products.push(modifiedProduct);
+    return modifiedProduct;
   }
 
   findAll() {
