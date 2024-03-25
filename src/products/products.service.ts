@@ -4,6 +4,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './interfaces/product.interface';
 import { v4 as uuidv4 } from 'uuid';
 import { faker } from '@faker-js/faker';
+import { concat } from 'rxjs';
 @Injectable()
 export class ProductsService implements OnApplicationBootstrap {
   private static instance: ProductsService;
@@ -46,8 +47,12 @@ export class ProductsService implements OnApplicationBootstrap {
     return this.products;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  findOne(id: string) {
+    const product =
+      this.products.filter((item) => item.id == id).length == 0
+        ? null
+        : this.products.filter((item) => item.id == id)[0];
+    return product;
   }
 
   update(id: number, updateProductDto: UpdateProductDto) {
