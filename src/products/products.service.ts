@@ -1,4 +1,8 @@
-import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  OnApplicationBootstrap,
+} from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './interfaces/product.interface';
@@ -52,14 +56,37 @@ export class ProductsService implements OnApplicationBootstrap {
       this.products.filter((item) => item.id == id).length == 0
         ? null
         : this.products.filter((item) => item.id == id)[0];
+
+    if (!product) {
+      throw new NotFoundException('Product Not Exist');
+    }
     return product;
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  update(id: string, updateProductDto: UpdateProductDto) {
+    this.products = this.products.map((item) => {
+      if (item.id == id) {
+        return { ...item, ...updateProductDto };
+      } else {
+        return item;
+      }
+    });
+    const product = this.products.filter((item) => item.id == id);
+    const result = product.length == 0 ? null : product[0];
+    if (!result) {
+      throw new NotFoundException('Product Not Exist');
+    }
+    return product;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  remove(id: string) {
+    const product = this.products.filter((item) => item.id == id);
+    const result = product.length == 0 ? null : product[0];
+    if (!result) {
+      throw new NotFoundException('Product Not Exist');
+    }
+    this.products = this.products.filter((item) => id !== item.id);
+
+    return product;
   }
 }
